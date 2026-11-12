@@ -479,6 +479,7 @@ def write_detection_examples(
                 if exact_result is not None else None
             ),
             "exact_site_activity": exact_result.activity if exact_result else None,
+            "exact_witnesses": exact_result.witnesses if exact_result else None,
         })
     import json
     (output_dir / "examples.json").write_text(
