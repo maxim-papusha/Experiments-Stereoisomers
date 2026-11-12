@@ -1,0 +1,38 @@
+name: Build JCIM achemso manuscript
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'manuscript/jcim/**'
+      - '.github/workflows/build-jcim-manuscript.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  latex:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out manuscript
+        uses: actions/checkout@v4
+
+      - name: Compile achemso LaTeX manuscript
+        uses: xu-cheng/latex-action@v4
+        with:
+          root_file: main.tex
+          working_directory: manuscript/jcim
+          texlive_version: 2026
+
+      - name: Upload compiled manuscript
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jcim-achemso-draft
+          path: |
+            manuscript/jcim/main.pdf
+            manuscript/jcim/main.log
+            manuscript/jcim/main.blg
+          if-no-files-found: warn
