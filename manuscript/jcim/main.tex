@@ -93,77 +93,106 @@ the algorithms never add new descriptors.
 \subsection{Input molecular graph and local configuration domains}
 \label{subsec:input}
 
-Let
+The input is a molecular graph containing a list of potential
+tetrahedral sites. We describe it by
 \begin{equation}
-G=(V,E,\lambda_V,\lambda_E,\mathcal D)
+G=(V,E,\lambda_V,\lambda_E,\mathcal D),
 \label{eq:graph}
 \end{equation}
-be a molecular graph equipped with an already supplied set of potential
-stereochemical descriptors
-$\mathcal D=\{d_s:s\in S\}$. For the initial study, every $s\in S$
-is a tetrahedral atom site. A descriptor with an assigned parity is held
-fixed; parity \texttt{None} denotes an unspecified configuration. Importantly,
-\emph{none of the algorithms in this paper introduces new descriptor sites}.
-Geometry nomination belongs to an upstream adapter and must be evaluated
-separately.
+where $V$ is the set of atoms, $E$ is the set of bonds,
+$\lambda_V$ and $\lambda_E$ are the stored chemical attributes,
+and $\mathcal D=\{d_s:s\in S\}$ contains the pre-existing
+tetrahedral descriptors. In chemical terms, the input already
+specifies which atoms have tetrahedral geometries that may be
+varied. The upstream adapter supplies these sites; detection
+and enumeration do not introduce any new descriptors.
 
-Each site has a finite local state space $D_s$. For an unassigned
-four-coordinate tetrahedral descriptor this is the two-state set defined by
-the geometry-preserving permutation group; for a specified descriptor the
-allowed enumeration domain contains only its existing state:
+A tetrahedral descriptor has two formal spatial arrangements,
+denoted $+1$ and $-1$ relative to its ordered ligand positions.
+These are local parity labels, \emph{not} the CIP descriptors
+$R$ and $S$.\cite{Hanson2018,Papusha2026}
+Let $X_s=\{-1,+1\}$ contain both local states at an existing
+site. If one state is already specified, it is held fixed during
+enumeration. Thus the allowed choices are
 \begin{equation}
 D_s =
 \begin{cases}
-\{d_s\}, & \text{if $d_s$ is specified},\\
-\operatorname{LocalStates}(d_s), & \text{if $d_s$ is unspecified}.
+\{\text{specified state}\}, & \text{if $s$ is fixed},\\
+X_s, & \text{if $s$ is unspecified}.
 \end{cases}
 \label{eq:domain}
 \end{equation}
-The formal set of complete local assignments is
+The complete set of formal assignments is
 \begin{equation}
 \Omega=\prod_{s\in S}D_s,\qquad
 |\Omega|=\prod_{s\in S}|D_s|.
 \label{eq:omega}
 \end{equation}
-These assignments need not all be stereochemically inequivalent, and the
-set is not in general a proof of geometric or kinetic realizability.
+For five unspecified tetrahedral sites, this gives $2^5=32$
+assignments. Some assignments may represent identical
+stereochemical structures because of symmetry. Others may
+be incompatible with ring geometry. Equation~\ref{eq:omega}
+therefore describes the search space, not necessarily the
+number of chemically distinct stereoisomers.
 
 \subsection{Site-anchored stereogenicity in a fixed context}
 \label{subsec:local-test}
 
-For a site $s$ and configurations $\boldsymbol{\sigma}_{-s}$ at all
-other variable sites, let
-$G_{s,x}(\boldsymbol{\sigma}_{-s})$ be the graph obtained by assigning
-local state $x$ at $s$. Write $\Iso_s$ for a stereo-preserving graph
-isomorphism that also maps site $s$ onto itself. We define
+Consider one potential tetrahedral center $s$. Fix all
+other stereo configurations and ask whether exchanging the
+two local arrangements at $s$ changes the stereochemical
+structure. Two substituent branches that appear identical
+before stereo is specified may become distinguishable after
+their remote configurations are assigned.
+
+We answer this question using \emph{stereo-preserving graph
+isomorphism}: a one-to-one correspondence between atoms
+that preserves their connectivity, stored chemical attributes,
+and local stereochemical arrangements.\cite{Papusha2026,Cordella2004}
+For a \emph{site-specific} comparison, the chosen atom $s$
+must also map onto itself. We denote this by $\cong_s$.
+This condition prevents an otherwise valid global
+isomorphism from exchanging $s$ with a different,
+symmetry-equivalent atom.
+
+Let $\boldsymbol{\sigma}_{-s}$ denote the fixed
+configurations at all other sites.
+The graph $G_{s,x}(\boldsymbol{\sigma}_{-s})$ has
+local state $x$ at $s$. Define
 \begin{equation}
 A_s(\boldsymbol{\sigma}_{-s}) =
 \begin{cases}
-1, & \exists x,y\in X_s:\quad
-G_{s,x}(\boldsymbol{\sigma}_{-s})\not\Iso_s
-G_{s,y}(\boldsymbol{\sigma}_{-s}),\\
-0, & \text{otherwise},
+1, & G_{s,+1}(\boldsymbol{\sigma}_{-s})
+       \not\cong_s G_{s,-1}(\boldsymbol{\sigma}_{-s}),\\
+0, & G_{s,+1}(\boldsymbol{\sigma}_{-s})
+       \cong_s G_{s,-1}(\boldsymbol{\sigma}_{-s}).
 \end{cases}
 \label{eq:activation}
 \end{equation}
-where $X_s$ is the set of all local states of the \emph{existing}
-descriptor, even when its input configuration was fixed for purposes of
-enumeration. Site anchoring separates local stereogenicity from global
-isomorphisms that may exchange two equivalent sites.
+Here $A_s=1$ means that the two arrangements cannot
+be exchanged without changing the represented stereo graph
+\emph{while keeping the chosen atom fixed}.
+To assess this property one may compare both hypothetical
+states of $s$ even if the input currently fixes one state;
+the configurations at other sites remain fixed.
 
-This leads to three unambiguous graph-theoretical classifications:
+Repeat the test for all allowed configurations of the
+other sites. This gives three classes:
 \begin{equation}
 \begin{aligned}
-\text{always active:}\quad & A_s(\tau)=1\ \forall\tau,\\
-\text{conditionally active:}\quad & \exists\tau,\tau':
-A_s(\tau)\ne A_s(\tau'),\\
-\text{inactive:}\quad & A_s(\tau)=0\ \forall\tau.
+\text{always active:}\quad & A_s(\tau)=1\text{ for every }\tau,\\
+\text{conditional:}\quad & A_s(\tau)=0\text{ for some }\tau
+                         \text{ and }1\text{ for others},\\
+\text{inactive:}\quad & A_s(\tau)=0\text{ for every }\tau .
 \end{aligned}
 \label{eq:class}
 \end{equation}
-All quantifiers range over the represented assignments of other existing
-sites. These definitions concern distinguishability of stereo-labelled
-graphs, not rates of stereochemical interconversion.
+The symbol $\tau$ denotes one complete choice at the
+other supplied sites. These classifications concern the
+\emph{represented graph}, not physical stability or
+automatically assigned CIP descriptors. The anchored
+local question must also be distinguished from equivalence
+of two complete molecules without any anchored atom.
 
 \subsection{Directed stereochemical dependence}
 \label{subsec:dependency}
