@@ -278,38 +278,61 @@ reporting the orbit sizes.}
 \subsection{Enumerating unique stereochemical graph classes}
 \label{subsec:enumeration}
 
-The reproducible baseline enumerates the Cartesian product in
-eq~\ref{eq:omega}, inserts each local configuration \emph{only into an
-existing descriptor slot}, and deduplicates completed graphs using exact
-stereo-aware graph isomorphism. With an appropriate action of the
-constitutional automorphism group $\Gamma$ on the local states,
-unique graph classes are the orbits $\Omega/\Gamma$. Burnside's lemma
-gives the independent count
+The reference generator visits every assignment in
+eq~\ref{eq:omega}, sets the configurations at the
+\emph{existing} descriptors, and removes equivalent
+complete stereo graphs by graph isomorphism. Unlike
+an initial local ligand test, this comparison accounts
+for all other assigned configurations.
+
+Molecular symmetry provides an independent way to
+check the count. A constitutional automorphism may
+exchange equivalent stereo sites. It also transports
+their local tetrahedral configurations, possibly
+reversing a parity sign when the ligand ordering is
+changed. All complete assignments connected by these
+operations form a \emph{symmetry orbit}, representing
+one stereo-graph equivalence class.
+
+If $\Gamma$ is the group of structural symmetries
+compatible with fixed input stereochemistry, Burnside's
+formula gives the number of distinct graph classes:
 \begin{equation}
 N_{\mathrm{orbits}}=
 \frac{1}{|\Gamma|}
 \sum_{g\in\Gamma}|\operatorname{Fix}_{\Omega}(g)|.
 \label{eq:burnside}
 \end{equation}
-The action must transport both site locations and tetrahedral parity;
-it must not treat a local handedness label as invariant under arbitrary
-permutations of ligand slots.
+To apply it, count the assignments unchanged by
+each symmetry, add those counts, and divide by the
+number of symmetries.\cite{Rieder2023}
+For 2,3-dichlorobutane, the two equivalent meso
+descriptions occupy one orbit, leaving three
+stereoisomers instead of four assignments.
 
 \subsection{Prospective symmetry-pruned enumeration}
 \label{subsec:prune}
 
-Canonical augmentation and stabilizer-orbit methods may suppress
-redundant \emph{partial} assignments, following the general principles of
-isomorph-free exhaustive generation.\cite{McKay1998} For a partial
-assignment $\sigma_j$ and candidate site $s_j$, one safe conditional
-strategy would use
+The baseline removes duplicates only after full
+assignments are constructed. A future algorithm
+could avoid exploring equivalent intermediate
+assignments using canonical augmentation or
+stabilizer-orbit techniques.\cite{McKay1998}
+For a partial assignment $\sigma_j$ and its
+next site $s_j$, consider the symmetries
+that preserve both:
 \begin{equation}
-H_j=\Stab_{\Gamma}(\sigma_j)\cap\Stab_{\Gamma}(s_j)
+H_j=\Stab_{\Gamma}(\sigma_j)\cap\Stab_{\Gamma}(s_j).
 \label{eq:stabilizer}
 \end{equation}
-and branch on representatives of $X_{s_j}/H_j$, provided the induced
-group action, state transport, and admissible domains are exact.
-\emph{This optimization is not part of the initial validated generator.}
+Here $\Stab$ denotes a subgroup whose elements
+leave the specified object unchanged. Under an
+exact and validated symmetry action, one may
+explore representatives of the local-state
+orbits instead of all equivalent choices.
+This acceleration is not implemented in the
+reference generator. Any proposed pruning must
+reproduce its complete equivalence classes.
 
 \section{Computational Methods and Reproducibility}
 \label{sec:methods}
