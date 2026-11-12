@@ -52,7 +52,7 @@ Python 3.11+ and Git are required.
     pip install -e ".[test]"
 
 The installer retrieves StereoMolGraph from its experimental
-\`stereoisomer\` branch. For reproducible publications pin the exact
+`stereoisomer` branch. For reproducible publications pin the exact
 StereoMolGraph commit and RDKit version.
 
 ## Scope
@@ -89,9 +89,49 @@ For an optional expensive exact dependency analysis:
     python examples/generate_dependency_figures.py --output examples/figures --exact
 
 Expected files include
-\`VS294_molecule.svg\`, \`VS294_dependencies.svg\`, and
-\`examples.json\`. CI uploads these as artifacts, and the repository
+`VS294_molecule.svg`, `VS294_dependencies.svg`, and
+`examples.json`. CI uploads these as artifacts, and the repository
 keeps a static set of generated example graphs for inspection.
+
+## Verified complex-molecule example: VS294
+
+The exact analysis on **VS294** found five tetrahedral descriptor sites,
+at atom indices 1, 3, 5, 8 and 9. Four are always active in the represented
+configuration space. **Atom 3 is conditionally stereogenic**: changing
+any one of the other four sites can change whether its two local
+configurations are distinguishable in some fixed context.
+
+This yields four verified directed dependency edges:
+
+~~~mermaid
+flowchart LR
+  C1["C1 (always active)"] --> C3["C3 (conditionally active)"]
+  C5["C5 (always active)"] --> C3
+  C8["C8 (always active)"] --> C3
+  C9["C9 (always active)"] --> C3
+~~~
+
+**Molecular structure with atom indices and highlighted candidate sites:**
+
+![VS294 structural depiction](examples/figures/VS294_molecule.svg)
+
+**Computed directed stereochemical dependency network:**
+
+![VS294 dependency network](examples/figures/VS294_dependencies.svg)
+
+- [View the VS294 dependency SVG](examples/figures/VS294_dependencies.svg)
+- [View the VS295 dependency SVG](examples/figures/VS295_dependencies.svg)
+- [View all example site classifications and exact witnesses](examples/figures/examples.json)
+
+These are dependencies under the current **StereoMolGraph
+site-anchored stereoisomorphism model**, not statements about the
+existence of experimentally isolable stereoisomers.
+
+The reference example VS006 shows an important counterpoint:
+its fast positional influence heuristic predicts many edges,
+but exact contextual activity finds **no** directed dependencies
+for its four retained tetrahedral sites. This illustrates why
+heuristic edges must not be used for completeness-critical pruning.
 
 ## Tests
 
