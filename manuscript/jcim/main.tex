@@ -239,24 +239,41 @@ stereo assignments.
 \subsection{Atom orbits, chirality, and stereochemical context}
 \label{subsec:orbits}
 
-Let $\Aut(G_0)$ be the automorphism group of the undecorated or
-partially specified molecular graph. For an assignment $\sigma$,
-let $\Aut(G_0;\sigma)$ denote the subgroup respecting its specified
-stereochemical descriptors. The orbit of atom $v$ is
+Two atoms belong to the same \emph{orbit} if a symmetry
+of the molecular graph can exchange them. For example,
+the two middle carbon atoms of succinic acid are
+constitutionally equivalent. A symmetry of a graph is
+called an \emph{automorphism}: it exchanges equivalent
+atoms while retaining their bonds and chemical labels.
+
+After tetrahedral configurations are specified, only
+automorphisms preserving those configurations remain
+allowed. The atom orbit is
 \begin{equation}
 \mathcal O_{\sigma}(v)
-=\{g(v):g\in\Aut(G_0;\sigma)\}.
+=\{g(v):g\in\Aut(G;\sigma)\},
 \label{eq:orbits}
 \end{equation}
-Specifying configurations can split parent atom orbits, or it can
-preserve an atom orbit while changing the molecular stereochemical
-symmetry. Orbit preservation alone does not establish achirality:
-the effect of spatial reflection on tetrahedral configurations must
-be analyzed separately.
+where $\Aut(G;\sigma)$ is the group of stereo-preserving
+automorphisms. Assigning stereochemistry can split
+previously equivalent atom orbits but cannot merge
+previously distinct ones when the underlying labels
+stay unchanged.
 
-\todolist{Find a fully verified chemical pair of examples for orbit-preserving
-versus orbit-splitting stereochemical decoration. Confirm with explicit
-automorphism calculations and depict both molecular structures in Figure 1.}
+\emph{Atom equivalence is not the same as molecular
+chirality.} A molecule is chiral when its mirror image
+is not superposable on the original.\cite{Moss1996,FavrePowell2014}
+A meso molecule may contain stereogenic centers yet be
+achiral. Conversely, equivalent atom positions can remain
+related by symmetry even when the completed molecule is
+chiral. To test molecular chirality one compares a complete
+assignment with its inverted, mirror assignment, without
+anchoring any one site.
+
+\todolist{Add independently verified chemical examples
+of an atom orbit being preserved or split by stereochemical
+decoration. Calculate their automorphism groups before
+reporting the orbit sizes.}
 
 \subsection{Enumerating unique stereochemical graph classes}
 \label{subsec:enumeration}
