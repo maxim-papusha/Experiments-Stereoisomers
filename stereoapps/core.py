@@ -14,7 +14,8 @@ from pathlib import Path
 from typing import Literal
 
 from rdkit import Chem
-from rdkit.Chem import rdMolDraw2D
+from rdkit.Chem import rdDepictor
+from rdkit.Chem.Draw import rdMolDraw2D
 from rdkit.Chem.EnumerateStereoisomers import (
     EnumerateStereoisomers,
     StereoEnumerationOptions,
@@ -343,7 +344,7 @@ def rdkit_stereoisomer_count(
 def molecule_svg(bundle: InputBundle, *, width: int = 750, height: int = 380) -> str:
     """RDKit depiction of the molecular skeleton with candidate sites marked."""
     mol = Chem.Mol(bundle.molecule)
-    Chem.Compute2DCoords(mol)
+    rdDepictor.Compute2DCoords(mol)
     drawer = rdMolDraw2D.MolDraw2DSVG(width, height)
     drawer.drawOptions().addAtomIndices = True
     drawer.DrawMolecule(
