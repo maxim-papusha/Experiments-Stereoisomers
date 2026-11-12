@@ -337,47 +337,104 @@ reproduce its complete equivalence classes.
 \section{Computational Methods and Reproducibility}
 \label{sec:methods}
 
-\subsection{Input contract and implemented workflows}
+\subsection{Input preparation and scope}
 
-The present algorithms accept \StereoMolGraph{} instances with
-pre-existing potential stereodescriptors. No geometry inference occurs
-inside site analysis or stereoisomer enumeration. In this first study,
-isotopically specified atoms and non-single bonds are excluded to avoid
-confounding stereogenicity with chemical labels not retained by the
-current input representation. For controlled comparisons, upstream
-preprocessing may restrict already existing sites to those nominated
-by RDKit, but missing sites are never silently inserted.
+All calculations use \StereoMolGraph{} instances with
+pre-existing potential tetrahedral descriptors.
+An unspecified configuration is represented by
+\texttt{parity=None}; a specified configuration stays
+fixed. Analysis and enumeration do not add stereo
+sites. For the initial comparison, molecules with
+isotopically labeled atoms or non-single bonds
+(including aromatic bonds) are excluded, because
+these labels are not yet fully represented in the
+graph attributes used for matching. This is an
+explicit restriction of the benchmark, not a
+general restriction of the theory.
 
-\subsection{Exact activation and dependency calculation}
+Source SMILES in the pilot are drawn from the
+300-molecule CIP validation suite published with
+the algorithmic analysis of the CIP rules.\cite{Hanson2018}
+That suite tests nomenclature and descriptor
+assignment and is not an independent reference
+set of stereoisomer counts. For a controlled
+comparison, the input adapter retains only
+\emph{existing} tetrahedral descriptors that
+match RDKit's potential stereo-site list.
+This isolates enumeration from upstream
+site nomination. RDKit's stereoperception
+and enumeration are used as comparators,
+not as an assumed ground truth.\cite{RDKitBook2026,RDKit2026}
 
-For each completed context of the other sites, generate alternative
-local configurations at the target and perform anchored stereochemical
-isomorphism tests. Cache repeated contexts since $A_s$ does not depend
-on the currently assigned state at $s$. For each ordered pair
-$(t,s)$, search for a witness of eq~\ref{eq:dependency}. Record not
-only the edge, but also the assignments that switch activation.
+\subsection{Local activity and dependency tests}
 
-\subsection{Independent orbit verification and geometry probes}
+For each site, we hold the configurations
+at all other sites fixed, compare the two
+states of the selected tetrahedron, and
+apply the anchored stereo-aware graph
+isomorphism test of eq~\ref{eq:activation}.
+The implementation uses the stereochemical
+graph comparison in \StereoMolGraph{} and
+a VF2-family search.\cite{Papusha2026,Cordella2004}
+Identical contexts are cached so that a
+site is not retested unnecessarily.
 
-Construct the constitutional graph with explicit H atoms; enumerate
-its automorphisms independently (NetworkX in the pilot) and transport
-all local tetrahedral parities. Confirm eq~\ref{eq:burnside} and check
-every pair of enumerated representatives. Where RDKit disagrees, log
-stereotags before and after stereochemistry cleanup. Optional ETKDG
-embedding and MMFF minimization provide a separate \emph{heuristic}
-check of geometric realizability; successful optimization alone does
-not establish isolable stereoisomers.
+To determine an exact dependency arrow
+$t\rightarrow s$, we search for a pair
+of otherwise identical complete assignments
+that differ at $t$ and give different values
+of $A_s$. Each edge is stored with its
+witness assignments. A faster graph-color
+test can suggest positional influences,
+but no approximate edge is used to remove
+a configuration.\cite{Morgan1965}
 
-\subsection{Benchmark and performance plan}
+\subsection{Independent counting of stereochemical classes}
 
-\todolist{Construct a curated, nonredundant tetrahedral-only benchmark
-covering acyclic molecules, meso compounds, repeated stereogenic arms,
-bridged and cage systems, and conditional stereocenters. Use full
-isomer-class comparisons, not only counts. Randomly relabel atoms and
-verify invariance of activation functions, dependency edges, and all
-output equivalence classes. Report runtime, graph-isomorphism calls,
-partial search nodes, and memory for the unpruned baseline and any
-future symmetry pruning.}
+For the small pilot cases, construct an
+explicit-hydrogen graph and calculate its
+constitutional automorphisms using
+NetworkX.\cite{Hagberg2008}
+Transport the ligand ordering and tetrahedral
+parity under each automorphism, then
+partition all local assignments into orbits.
+The orbit count from eq~\ref{eq:burnside}
+is checked against direct pairwise
+stereo-aware isomorphism of the generated
+representatives. Thus, a count matching
+RDKit is not sufficient to establish
+correctness: the generated equivalence
+classes must agree.
+
+\subsection{Geometry and stereochemical cleanup}
+
+For any discrepancy with RDKit, inspect
+tetrahedral tags before and after
+\texttt{AssignStereochemistry(cleanIt=True)}.
+A preliminary geometric check uses RDKit's
+ETKDGv3 conformer generation, including
+the developments for cyclic molecules,
+followed by MMFF minimization.\cite{Riniker2015,Wang2020,Halgren1996}
+Successful embedding supports the
+existence of a locally consistent 3D
+arrangement, but does not establish
+configurational stability, a reaction
+barrier, or experimental isolability.
+
+\subsection{Planned validation and scaling}
+
+\todolist{Assemble a curated tetrahedral-only
+benchmark that includes acyclic molecules,
+meso compounds, repeated stereogenic branches,
+bridged rings, cages, and conditional centers.
+Verify each complete equivalence class using
+an independent symmetry calculation.
+Test invariance under atom relabeling
+and consistent reordering of ligand slots.
+Report runtime, graph-isomorphism calls,
+visited search nodes, and peak memory
+for the exhaustive baseline and any
+future symmetry-pruning implementation.}
 
 \section{Results and Discussion: Working Outline}
 \label{sec:results}
