@@ -133,6 +133,23 @@ but exact contextual activity finds **no** directed dependencies
 for its four retained tetrahedral sites. This illustrates why
 heuristic edges must not be used for completeness-critical pruning.
 
+## Independent validation: VS294 has seven tetrahedral graph classes
+
+A separate RDKit/NetworkX group-theory calculation confirms all seven
+StereoMolGraph classes are pairwise different under the same tetrahedral
+stereo-graph model. RDKit 2026.09.2 reports six because stereochemistry
+cleanup removes the conditionally stereogenic C3 tag, merging two
+distinct classes. Both opposite C3 configurations embed and optimize
+successfully in 3D with their other four centers unchanged.
+
+- [Detailed investigation and proof](investigations/REPORT-vs294-seven-vs-six.md)
+- [Reproduction script](investigations/verify_vs294_seven.py)
+- [Machine-readable CI output](investigations/results/vs294_analysis.json)
+
+The result establishes seven distinguishable configured graphs and
+supports their 3D realizability. It does not establish kinetic stability
+or experimental isolability.
+
 ## Tests
 
     pytest -q
