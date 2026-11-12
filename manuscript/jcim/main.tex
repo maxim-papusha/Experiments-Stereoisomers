@@ -408,9 +408,9 @@ classes must agree.
 
 \subsection{Geometry and stereochemical cleanup}
 
-For any discrepancy with RDKit, inspect
-tetrahedral tags before and after
-\texttt{AssignStereochemistry(cleanIt=True)}.
+For any discrepancy with RDKit, compare
+tetrahedral tags before and after RDKit's
+stereochemistry cleanup (\texttt{cleanIt=True}).
 A preliminary geometric check uses RDKit's
 ETKDGv3 conformer generation, including
 the developments for cyclic molecules,
