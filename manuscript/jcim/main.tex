@@ -197,26 +197,44 @@ of two complete molecules without any anchored atom.
 \subsection{Directed stereochemical dependence}
 \label{subsec:dependency}
 
-A configuration at site $t$ influences the stereogenicity of site $s$
-if a change at $t$ changes $A_s$, keeping every other site fixed:
+A configuration at site $t$ \emph{influences} another site $s$
+if changing $t$ can switch the activity of $s$ while all
+other configurations remain unchanged. We represent this by
+a directed arrow $t\rightarrow s$. The opposite arrow
+need not exist.
+
+Such an arrow exists if there is at least one assignment of
+the remaining sites for which
 \begin{equation}
 \begin{aligned}
 t\longrightarrow s\quad\Longleftrightarrow\quad
-&\exists\,\boldsymbol{\tau}_{-\{s,t\}},\ x,y\in X_t
-\text{ such that}\\
+&\exists\,\boldsymbol{\tau}_{-\{s,t\}},\ x,y\in X_t:\\
 &A_s(\boldsymbol{\tau}_{-\{s,t\}},t=x)
 \ne A_s(\boldsymbol{\tau}_{-\{s,t\}},t=y).
 \end{aligned}
 \label{eq:dependency}
 \end{equation}
-The resulting directed graph is $\mathcal H=(S,E_{\mathcal H})$.
-A directed edge records the existence of a witness, not a claim that
-all changes at $t$ affect $s$. As a richer description, the activation
-function $A_s$ retains joint effects of several sites that a simple
-pairwise graph cannot encode. The exact dependency test enumerates
-complete contexts and uses site-anchored stereo isomorphisms; a cheap
-color-refinement influence graph is used only for diagnostics and
-search ordering, never for correctness-critical pruning.
+The symbol $\exists$ means that at least one such case exists.
+Each arrow can be supported by an explicit pair of
+assignments, called a \emph{witness}. The arrow does
+not mean that every change at $t$ affects $s$.
+
+The sites and arrows form a directed dependency
+graph $\mathcal H=(S,E_{\mathcal H})$. In the
+cyclic molecule VS294, the preliminary analysis
+finds four arrows into C3, from C1, C5, C8, and C9.
+Changing any one source can change the activity
+of C3 in some fixed stereochemical context.
+
+A dependency graph tells us \emph{which} sites
+may matter. The full function $A_s$ also tells
+us \emph{when} they matter, including joint
+effects of multiple configurations. Molecular
+color refinement offers a fast way to suggest
+possible influences,\cite{Morgan1965} but equal
+colors do not prove ligand equivalence.
+Heuristic edges must not be used to discard
+stereo assignments.
 
 \subsection{Atom orbits, chirality, and stereochemical context}
 \label{subsec:orbits}
