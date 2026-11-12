@@ -1,0 +1,442 @@
+{
+  "molecule": "VS294 (same constitution as VS295)",
+  "smiles": "O[C@H]1O[C@@]2(O[C@H]1O)O[C@H]([C@H](O2)O)O",
+  "rdkit_version": "2026.09.2",
+  "centers": [
+    1,
+    3,
+    5,
+    8,
+    9
+  ],
+  "independent_group": {
+    "automorphism_count": 8
+  },
+  "stereomolgraph": {
+    "raw_assignments": 32,
+    "unique_smg_outputs": 7,
+    "independent_orbit_count": 7,
+    "burnside_sum_fixed": 56,
+    "graph_automorphisms": 8,
+    "unique_representative_orbit_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "unique_representative_parities": [
+      [
+        -1,
+        -1,
+        -1,
+        -1,
+        -1
+      ],
+      [
+        -1,
+        -1,
+        -1,
+        -1,
+        1
+      ],
+      [
+        -1,
+        -1,
+        -1,
+        1,
+        -1
+      ],
+      [
+        -1,
+        -1,
+        -1,
+        1,
+        1
+      ],
+      [
+        -1,
+        -1,
+        1,
+        -1,
+        1
+      ],
+      [
+        -1,
+        -1,
+        1,
+        1,
+        -1
+      ],
+      [
+        1,
+        -1,
+        -1,
+        1,
+        -1
+      ]
+    ],
+    "pairwise_vf2_matches_among_seven": [],
+    "independent_orbit_sizes": [
+      2,
+      2,
+      4,
+      4,
+      4,
+      8,
+      8
+    ]
+  },
+  "rdkit": {
+    "explicitly_tagged_orbits": 7,
+    "cleaned_rdkit_outputs": 6,
+    "center3_tags_after_cleanup": {
+      "CHI_UNSPECIFIED": 32
+    },
+    "clean_groups": [
+      {
+        "smiles": "O[C@@H]1OC2(O[C@@H](O)[C@@H](O)O2)O[C@@H]1O",
+        "formal_assignments": 8,
+        "distinct_full_tetrahedral_orbits": [
+          0,
+          3
+        ]
+      },
+      {
+        "smiles": "O[C@@H]1OC2(O[C@@H]1O)O[C@H](O)[C@@H](O)O2",
+        "formal_assignments": 8,
+        "distinct_full_tetrahedral_orbits": [
+          2
+        ]
+      },
+      {
+        "smiles": "O[C@@H]1OC2(O[C@H]1O)O[C@@H](O)[C@@H](O)O2",
+        "formal_assignments": 8,
+        "distinct_full_tetrahedral_orbits": [
+          1
+        ]
+      },
+      {
+        "smiles": "O[C@@H]1OC2(O[C@H]1O)O[C@@H](O)[C@H](O)O2",
+        "formal_assignments": 2,
+        "distinct_full_tetrahedral_orbits": [
+          4
+        ]
+      },
+      {
+        "smiles": "O[C@@H]1OC2(O[C@H]1O)O[C@H](O)[C@@H](O)O2",
+        "formal_assignments": 4,
+        "distinct_full_tetrahedral_orbits": [
+          5
+        ]
+      },
+      {
+        "smiles": "O[C@H]1OC2(O[C@@H]1O)O[C@H](O)[C@@H](O)O2",
+        "formal_assignments": 2,
+        "distinct_full_tetrahedral_orbits": [
+          6
+        ]
+      }
+    ],
+    "collapsed_orbit_groups": [
+      {
+        "smiles": "O[C@@H]1OC2(O[C@@H](O)[C@@H](O)O2)O[C@@H]1O",
+        "formal_assignments": 8,
+        "distinct_full_tetrahedral_orbits": [
+          0,
+          3
+        ]
+      }
+    ],
+    "orbits_from_full_configurations": [
+      {
+        "index": 0,
+        "representative": [
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        "size": 4,
+        "mirror_orbit": 3
+      },
+      {
+        "index": 1,
+        "representative": [
+          -1,
+          -1,
+          -1,
+          -1,
+          1
+        ],
+        "size": 8,
+        "mirror_orbit": 2
+      },
+      {
+        "index": 2,
+        "representative": [
+          -1,
+          -1,
+          -1,
+          1,
+          -1
+        ],
+        "size": 8,
+        "mirror_orbit": 1
+      },
+      {
+        "index": 3,
+        "representative": [
+          -1,
+          -1,
+          -1,
+          1,
+          1
+        ],
+        "size": 4,
+        "mirror_orbit": 0
+      },
+      {
+        "index": 4,
+        "representative": [
+          -1,
+          -1,
+          1,
+          -1,
+          1
+        ],
+        "size": 2,
+        "mirror_orbit": 6
+      },
+      {
+        "index": 5,
+        "representative": [
+          -1,
+          -1,
+          1,
+          1,
+          -1
+        ],
+        "size": 4,
+        "mirror_orbit": 5
+      },
+      {
+        "index": 6,
+        "representative": [
+          1,
+          -1,
+          -1,
+          1,
+          -1
+        ],
+        "size": 2,
+        "mirror_orbit": 4
+      }
+    ],
+    "fixed_counts": [
+      0,
+      0,
+      0,
+      0,
+      8,
+      8,
+      8,
+      32
+    ],
+    "example_raw_smiles_with_c3": "O[C@@H]1OC2(O[C@@H](O)[C@@H](O)O2)O[C@@H]1O"
+  },
+  "3d_feasibility_probe": {
+    "conformers_per_configuration": 10,
+    "two_c3_configurations": [
+      {
+        "central_tag": -1,
+        "requested_tags": [
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        "embedded": 10,
+        "nondegenerate_optimized": 10,
+        "min_mmff_energy_kcal_mol": -84.48211516143914,
+        "max_mmff_energy_kcal_mol": -74.2810577039403,
+        "oriented_volume_signatures": [
+          [
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1,
+            1
+          ]
+        ],
+        "first_volume_values": [
+          7.693687161778063,
+          9.0037296430233,
+          7.636256178591914,
+          7.699275322495483,
+          7.65107374731157
+        ]
+      },
+      {
+        "central_tag": 1,
+        "requested_tags": [
+          -1,
+          1,
+          -1,
+          -1,
+          -1
+        ],
+        "embedded": 10,
+        "nondegenerate_optimized": 10,
+        "min_mmff_energy_kcal_mol": -84.60496180088768,
+        "max_mmff_energy_kcal_mol": -74.28105773228269,
+        "oriented_volume_signatures": [
+          [
+            1,
+            -1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            -1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            -1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            -1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            -1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            -1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            -1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            -1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            -1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            -1,
+            1,
+            1,
+            1
+          ]
+        ],
+        "first_volume_values": [
+          7.682177528533696,
+          -8.957843233357915,
+          7.659945225066877,
+          7.710673238926075,
+          7.691808435540939
+        ]
+      }
+    ]
+  }
+}
