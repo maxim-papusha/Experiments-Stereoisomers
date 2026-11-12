@@ -40,6 +40,12 @@ jobs:
       - name: Run application tests
         run: python -m pytest tests -q
 
+      - name: Independently verify seven VS294/VS295 stereo-graph classes
+        run: |
+          python investigations/verify_vs294_seven.py \
+            --conformers 10 \
+            --output investigations/results/vs294_analysis.json
+
       - name: Generate complex-molecule dependency graphs
         run: |
           timeout 180 python examples/generate_dependency_figures.py --output examples/figures --exact
@@ -50,7 +56,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: tetrahedral-dependency-examples
-          path: examples/figures/
+          path: |
+            examples/figures/
+            investigations/results/vs294_analysis.json
           if-no-files-found: warn
 
       - name: Commit reproducible example SVG figures
@@ -59,8 +67,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add examples/figures/
+          git add examples/figures/ investigations/results/vs294_analysis.json
           if ! git diff --cached --quiet; then
-            git commit -m "Generate dependency graphs for complex tetrahedral molecules"
+            git commit -m "Generate dependency graphs and independently verified VS294 orbit results"
             git push origin HEAD:main
           fi
