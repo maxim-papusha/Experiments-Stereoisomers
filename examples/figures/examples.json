@@ -128,8 +128,13 @@
         5
       ]
     ],
-    "exact_edges": null,
-    "exact_site_activity": null
+    "exact_edges": [],
+    "exact_site_activity": {
+      "1": "always active",
+      "3": "always active",
+      "5": "always active",
+      "7": "always active"
+    }
   },
   {
     "name": "VS294 \u2014 bridged oxygen rings",
@@ -231,8 +236,31 @@
         3
       ]
     ],
-    "exact_edges": null,
-    "exact_site_activity": null
+    "exact_edges": [
+      [
+        1,
+        3
+      ],
+      [
+        5,
+        3
+      ],
+      [
+        8,
+        3
+      ],
+      [
+        9,
+        3
+      ]
+    ],
+    "exact_site_activity": {
+      "1": "always active",
+      "3": "conditionally active",
+      "5": "always active",
+      "8": "always active",
+      "9": "always active"
+    }
   },
   {
     "name": "VS295 \u2014 related oxygen rings",
@@ -334,7 +362,30 @@
         3
       ]
     ],
-    "exact_edges": null,
-    "exact_site_activity": null
+    "exact_edges": [
+      [
+        1,
+        3
+      ],
+      [
+        5,
+        3
+      ],
+      [
+        8,
+        3
+      ],
+      [
+        9,
+        3
+      ]
+    ],
+    "exact_site_activity": {
+      "1": "always active",
+      "3": "conditionally active",
+      "5": "always active",
+      "8": "always active",
+      "9": "always active"
+    }
   }
 ]
