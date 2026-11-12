@@ -42,7 +42,7 @@ jobs:
 
       - name: Generate complex-molecule dependency graphs
         run: |
-          python examples/generate_dependency_figures.py --output examples/figures
+          timeout 180 python examples/generate_dependency_figures.py --output examples/figures --exact
           cat examples/figures/examples.json
 
       - name: Upload SVGs and analysis report
