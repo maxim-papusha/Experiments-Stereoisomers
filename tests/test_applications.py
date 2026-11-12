@@ -96,3 +96,25 @@ def test_two_ordinary_sites_have_no_exact_dependency():
     exact = exact_dependency_analysis(bundle.graph, analysis)
     assert set(exact.activity.values()) == {"always active"}
     assert not exact.edges
+
+
+def test_exact_dependency_graph_in_complex_vs294():
+    """C3 is conditionally active and depends on C1, C5, C8, C9."""
+    bundle = parse_smiles(
+        EXAMPLES["VS294 — bridged oxygen rings"],
+        matched_rdkit_sites=True,
+    )
+    analysis = detect_stereo_elements(bundle.graph)
+    exact = exact_dependency_analysis(bundle.graph, analysis)
+    assert exact.activity[3] == "conditionally active"
+    assert {
+        (1, 3), (5, 3), (8, 3), (9, 3)
+    } == exact.edges
+    assert all(
+        exact.activity[a] == "always active"
+        for a in (1, 5, 8, 9)
+    )
+    assert all(
+        k in exact.witnesses
+        for k in ("1->3", "5->3", "8->3", "9->3")
+    )
