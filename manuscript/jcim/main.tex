@@ -28,16 +28,21 @@
 \begin{document}
 
 \begin{abstract}
-Whether a potential stereocenter is stereogenic can depend on the configurations
-of other sites in the same molecule, particularly in symmetric and cyclic
-structures. We outline a graph-theoretical method to classify tetrahedral
-stereogenicity as always active, conditionally active, or inactive, and to
-represent configuration-dependent relationships as directed dependencies.
-The method combines local permutation-group descriptors with site-anchored
-stereochemical graph isomorphisms and exhaustive stereoisomer enumeration.
-A preliminary case study yields seven distinct stereo-graph classes for an
-oxygen-bridged cyclic molecule, compared with six from a standard RDKit
-stereoisomer workflow; broader validation and performance analysis are planned.
+A tetrahedral atom can become stereogenic only after configurations at other
+sites are specified. This dependence is difficult to capture by examining
+individual substituents. We present a graph-based framework that compares
+alternative local configurations while holding the remaining stereochemistry
+fixed. It identifies always-active, conditionally active, and inactive
+tetrahedral sites and records which remote assignments change their
+stereogenicity. Complete configurations are generated from existing
+stereodescriptors and compared by stereo-aware graph isomorphism. In an
+illustrative case, a symmetric oxygen-bridged molecule yields seven distinct
+stereochemical graph classes, confirmed by an independent automorphism
+calculation, whereas a standard RDKit enumeration yields six. The approach
+provides a basis for analyzing stereochemical dependence and testing
+stereoisomer enumeration, subject to the chemical information and
+geometric constraints represented by the input graph.
+
 \end{abstract}
 
 % TODO: Final ACS submission needs a table-of-contents graphic (TOC entry),
@@ -46,34 +51,41 @@ stereoisomer workflow; broader validation and performance analysis are planned.
 \section{Introduction}
 \label{sec:intro}
 
-Stereochemistry is essential to chemical identity and molecular recognition.
-A familiar local approach labels an atom as stereogenic if its attached groups
-can be distinguished. In a molecule containing symmetry-related branches,
-however, the distinction between two attached groups may emerge only after
-another stereochemical configuration is specified. The resulting
-\emph{conditional stereogenicity} is a property of the complete stereochemical
-context rather than of an isolated atom.
+A tetrahedral carbon attached to four different substituents is a familiar
+example of a stereogenic center. However, equivalent substituents can
+become distinguishable after configurations elsewhere in the molecule
+are specified. This is particularly relevant in symmetric and polycyclic
+structures. Examining one atom without its stereochemical surroundings
+may therefore give an incomplete answer. IUPAC terminology already
+distinguishes a stereogenic unit from a chiral \emph{molecule}.\cite{Moss1996,FavrePowell2014}
 
-Existing molecular informatics tools address potential stereocenters,
-canonicalization, and stereoisomer generation, but use different criteria for
-retaining or removing local stereo assignments. For example, RDKit provides
-a dedicated potential-stereocenter perception procedure and a separate
-stereoisomer enumeration workflow; the distinction is relevant for
-para-stereogenic systems. Graph-automorphism methods are also established in
-stereoisomer enumeration.\cite{RDKitBook2026,Rieder2023,McKay1998}
+Consider 2,3-dichlorobutane. Its two tetrahedral centers permit four
+formal combinations of local configurations. Molecular symmetry makes
+$(2R,3S)$ and $(2S,3R)$ descriptions of the same meso isomer, so only
+three stereoisomers remain. This separates two questions:
+\emph{Does changing one selected center matter when the others are fixed?}
+and \emph{Are two fully configured molecules equivalent?}
+Cahn--Ingold--Prelog (CIP) labels name configurations but do not
+themselves answer these graph-equivalence questions.\cite{FavrePowell2014,Hanson2018}
 
-The recently reported \StereoMolGraph{} representation integrates
-stereochemistry with molecular and reaction graphs using local
-permutation-group descriptors.\cite{Papusha2026}
-Our present work starts \emph{after} geometry-eligible descriptor sites have
-been provided and addresses three different computational questions:
-(i) which sites are stereogenic at a specified configuration,
-(ii) which remote assignments affect the stereogenicity of a given site,
-and (iii) which fully assigned stereo graphs are inequivalent.
+Established software includes RDKit's perception of potential stereo
+sites,\cite{RDKitBook2026} graph-automorphism-based stereoisomer
+enumeration in \textit{enu},\cite{Rieder2023} and
+stereopermutation-based representations such as
+\textit{Molassembler}.\cite{Sobez2020}
+The previously published \StereoMolGraph{} library incorporates
+local permutation-group descriptors into molecular and reaction
+graph comparisons.\cite{Papusha2026} This study does not
+reintroduce that representation, assign CIP priorities, or infer
+coordination geometries.
 
-\todolist{Distinguish this work explicitly from stereochemical representation,
-CIP assignment, and ordinary enumeration. Review the para-stereochemistry and
-stereoisomer-generation literature in detail, including RDKit and \textit{enu}.}
+Instead, we investigate how the \emph{distinguishability} of a
+tetrahedral center changes with configurations at other sites.
+We define a site-specific graph comparison, use it to build
+stereochemical dependency networks, and test exhaustive
+stereoisomer enumeration against independent symmetry calculations.
+All potential tetrahedral sites are supplied with the input:
+the algorithms never add new descriptors.
 
 \section{Theory and Mathematical Definitions}
 \label{sec:theory}
