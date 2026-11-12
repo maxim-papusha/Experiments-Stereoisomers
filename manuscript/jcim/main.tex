@@ -28,7 +28,7 @@
 \begin{document}
 
 \begin{abstract}
-A tetrahedral atom can become stereogenic only after configurations at other
+Some tetrahedral atoms become stereogenic only after configurations at other
 sites are specified. This dependence is difficult to capture by examining
 individual substituents. We present a graph-based framework that compares
 alternative local configurations while holding the remaining stereochemistry
@@ -441,14 +441,18 @@ future symmetry-pruning implementation.}
 
 \subsection{A case study with five tetrahedral sites}
 
-The oxygen-rich bridged molecule VS294 from the CIP validation sample has
-five candidate tetrahedral sites (atom indices 1, 3, 5, 8, and 9).
-In the graph-theoretical model, sites 1, 5, 8, and 9 are active in every
-represented context, whereas site 3 is conditionally active. Exact
-contextual comparisons identify directed influences from each of the
-other four sites to site 3. The corresponding dependency network should
-be presented together with the molecular structure and a compact
-assignment/witness table (Figure~\ref{fig:dependency}).
+The oxygen-bridged molecule VS294 is part of the published
+CIP validation suite.\cite{Hanson2018} It has five supplied tetrahedral
+sites, numbered 1, 3, 5, 8, and 9 in the input graph. For this
+molecule, sites 1, 5, 8, and 9 are always active under
+eq~\ref{eq:activation}, whereas C3 is conditionally active.
+In particular, changing the configuration at any one of
+C1, C5, C8, or C9 changes the activity of C3 for at
+least one otherwise fixed assignment. These are
+\emph{configuration-dependent} relationships, not simply
+the locations of neighboring atoms.
+Figure~\ref{fig:dependency} will show the molecular structure
+and the four verified directed arrows.
 
 \begin{figure}[ht]
   \centering
@@ -474,12 +478,18 @@ classes. All seven \StereoMolGraph{} representatives occupy different
 independently calculated orbits and all 21 pairs are non-isomorphic
 under the current stereo-aware VF2 implementation.
 
-In the pilot, RDKit 2026.09.2 produces six outputs: its standard stereo
-cleanup removes the central C3 tetrahedral tag in all 32 tagged
-assignments and collapses two orbits. Both opposite C3 arrangements
-were embedded and optimized in 10 conformers each under a molecular
-mechanics model. This supports distinct locally realizable 3D
-arrangements but does not establish configurational stability.
+In the pilot, RDKit 2026.09.2 generates six unique outputs.
+Its standard stereochemical cleanup removes the C3 tetrahedral
+tag in all 32 explicitly tagged assignments, merging
+two otherwise distinct orbits. The independent group
+calculation identifies seven classes: three enantiomeric
+pairs and one achiral class in the represented stereo model.
+Ten conformers of each of two opposite C3 configurations
+were embedded and optimized by molecular mechanics; the
+other four local configurations remained unchanged.
+This supports local 3D realizability but not the
+experimental isolability or interconversion barriers
+of these structures.\cite{RDKit2026,Riniker2015,Wang2020,Halgren1996}
 
 \begin{table}[ht]
 \centering
