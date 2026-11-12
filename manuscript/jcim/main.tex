@@ -1,0 +1,421 @@
+% Draft manuscript outline for Journal of Chemical Information and Modeling.
+% This is intentionally an outline and is NOT ready for journal submission.
+% Scope: tetrahedral stereochemistry; the input graph already contains every
+% candidate stereodescriptor (parity=None means unassigned).
+\documentclass[journal=jcisd8,manuscript=article]{achemso}
+% Corresponding-author email is deliberately omitted in this preliminary outline.
+% Before submission, remove email=false and supply a validated \email{...}.
+\setkeys{acs}{email=false}
+
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{array}
+\emergencystretch=2em % improve line breaks in this long outline
+
+\newcommand{\StereoMolGraph}{\textsc{StereoMolGraph}}
+\newcommand{\Aut}{\operatorname{Aut}}
+\newcommand{\Stab}{\operatorname{Stab}}
+\newcommand{\sgn}{\operatorname{sgn}}
+\newcommand{\Iso}{\cong}
+\newcommand{\todolist}[1]{\par\smallskip{\small\noindent\textbf{To develop:} #1\par}\smallskip}
+
+\title{Conditional Stereogenicity and Stereoisomer Enumeration Using Molecular Graph Isomorphisms}
+
+% TODO: confirm author list, order, ORCID identifiers, and current affiliations.
+\author{Maxim Papusha}
+\affiliation{Institute of Technical Thermodynamics, RWTH Aachen University,
+Aachen, Germany}
+
+\begin{document}
+
+\begin{abstract}
+Whether a potential stereocenter is stereogenic can depend on the configurations
+of other sites in the same molecule, particularly in symmetric and cyclic
+structures. We outline a graph-theoretical method to classify tetrahedral
+stereogenicity as always active, conditionally active, or inactive, and to
+represent configuration-dependent relationships as directed dependencies.
+The method combines local permutation-group descriptors with site-anchored
+stereochemical graph isomorphisms and exhaustive stereoisomer enumeration.
+A preliminary case study yields seven distinct stereo-graph classes for an
+oxygen-bridged cyclic molecule, compared with six from a standard RDKit
+stereoisomer workflow; broader validation and performance analysis are planned.
+\end{abstract}
+
+% TODO: Final ACS submission needs a table-of-contents graphic (TOC entry),
+% final author metadata, a polished abstract, and separate SI files.
+
+\section{Introduction}
+\label{sec:intro}
+
+Stereochemistry is essential to chemical identity and molecular recognition.
+A familiar local approach labels an atom as stereogenic if its attached groups
+can be distinguished. In a molecule containing symmetry-related branches,
+however, the distinction between two attached groups may emerge only after
+another stereochemical configuration is specified. The resulting
+\emph{conditional stereogenicity} is a property of the complete stereochemical
+context rather than of an isolated atom.
+
+Existing molecular informatics tools address potential stereocenters,
+canonicalization, and stereoisomer generation, but use different criteria for
+retaining or removing local stereo assignments. For example, RDKit provides
+a dedicated potential-stereocenter perception procedure and a separate
+stereoisomer enumeration workflow; the distinction is relevant for
+para-stereogenic systems. Graph-automorphism methods are also established in
+stereoisomer enumeration.\cite{RDKitBook2026,Rieder2023,McKay1998}
+
+The recently reported \StereoMolGraph{} representation integrates
+stereochemistry with molecular and reaction graphs using local
+permutation-group descriptors.\cite{Papusha2026}
+Our present work starts \emph{after} geometry-eligible descriptor sites have
+been provided and addresses three different computational questions:
+(i) which sites are stereogenic at a specified configuration,
+(ii) which remote assignments affect the stereogenicity of a given site,
+and (iii) which fully assigned stereo graphs are inequivalent.
+
+\todolist{Distinguish this work explicitly from stereochemical representation,
+CIP assignment, and ordinary enumeration. Review the para-stereochemistry and
+stereoisomer-generation literature in detail, including RDKit and \textit{enu}.}
+
+\section{Theory and Mathematical Definitions}
+\label{sec:theory}
+
+\subsection{Input molecular graph and local configuration domains}
+\label{subsec:input}
+
+Let
+\begin{equation}
+G=(V,E,\lambda_V,\lambda_E,\mathcal D)
+\label{eq:graph}
+\end{equation}
+be a molecular graph equipped with an already supplied set of potential
+stereochemical descriptors
+$\mathcal D=\{d_s:s\in S\}$. For the initial study, every $s\in S$
+is a tetrahedral atom site. A descriptor with an assigned parity is held
+fixed; parity \texttt{None} denotes an unspecified configuration. Importantly,
+\emph{none of the algorithms in this paper introduces new descriptor sites}.
+Geometry nomination belongs to an upstream adapter and must be evaluated
+separately.
+
+Each site has a finite local state space $D_s$. For an unassigned
+four-coordinate tetrahedral descriptor this is the two-state set defined by
+the geometry-preserving permutation group; for a specified descriptor the
+allowed enumeration domain contains only its existing state:
+\begin{equation}
+D_s =
+\begin{cases}
+\{d_s\}, & \text{if $d_s$ is specified},\\
+\operatorname{LocalStates}(d_s), & \text{if $d_s$ is unspecified}.
+\end{cases}
+\label{eq:domain}
+\end{equation}
+The formal set of complete local assignments is
+\begin{equation}
+\Omega=\prod_{s\in S}D_s,\qquad
+|\Omega|=\prod_{s\in S}|D_s|.
+\label{eq:omega}
+\end{equation}
+These assignments need not all be stereochemically inequivalent, and the
+set is not in general a proof of geometric or kinetic realizability.
+
+\subsection{Site-anchored stereogenicity in a fixed context}
+\label{subsec:local-test}
+
+For a site $s$ and configurations $\boldsymbol{\sigma}_{-s}$ at all
+other variable sites, let
+$G_{s,x}(\boldsymbol{\sigma}_{-s})$ be the graph obtained by assigning
+local state $x$ at $s$. Write $\Iso_s$ for a stereo-preserving graph
+isomorphism that also maps site $s$ onto itself. We define
+\begin{equation}
+A_s(\boldsymbol{\sigma}_{-s}) =
+\begin{cases}
+1, & \exists x,y\in X_s:\quad
+G_{s,x}(\boldsymbol{\sigma}_{-s})\not\Iso_s
+G_{s,y}(\boldsymbol{\sigma}_{-s}),\\
+0, & \text{otherwise},
+\end{cases}
+\label{eq:activation}
+\end{equation}
+where $X_s$ is the set of all local states of the \emph{existing}
+descriptor, even when its input configuration was fixed for purposes of
+enumeration. Site anchoring separates local stereogenicity from global
+isomorphisms that may exchange two equivalent sites.
+
+This leads to three unambiguous graph-theoretical classifications:
+\begin{equation}
+\begin{aligned}
+\text{always active:}\quad & A_s(\tau)=1\ \forall\tau,\\
+\text{conditionally active:}\quad & \exists\tau,\tau':
+A_s(\tau)\ne A_s(\tau'),\\
+\text{inactive:}\quad & A_s(\tau)=0\ \forall\tau.
+\end{aligned}
+\label{eq:class}
+\end{equation}
+All quantifiers range over the represented assignments of other existing
+sites. These definitions concern distinguishability of stereo-labelled
+graphs, not rates of stereochemical interconversion.
+
+\subsection{Directed stereochemical dependence}
+\label{subsec:dependency}
+
+A configuration at site $t$ influences the stereogenicity of site $s$
+if a change at $t$ changes $A_s$, keeping every other site fixed:
+\begin{equation}
+\begin{aligned}
+t\longrightarrow s\quad\Longleftrightarrow\quad
+&\exists\,\boldsymbol{\tau}_{-\{s,t\}},\ x,y\in X_t
+\text{ such that}\\
+&A_s(\boldsymbol{\tau}_{-\{s,t\}},t=x)
+\ne A_s(\boldsymbol{\tau}_{-\{s,t\}},t=y).
+\end{aligned}
+\label{eq:dependency}
+\end{equation}
+The resulting directed graph is $\mathcal H=(S,E_{\mathcal H})$.
+A directed edge records the existence of a witness, not a claim that
+all changes at $t$ affect $s$. As a richer description, the activation
+function $A_s$ retains joint effects of several sites that a simple
+pairwise graph cannot encode. The exact dependency test enumerates
+complete contexts and uses site-anchored stereo isomorphisms; a cheap
+color-refinement influence graph is used only for diagnostics and
+search ordering, never for correctness-critical pruning.
+
+\subsection{Atom orbits, chirality, and stereochemical context}
+\label{subsec:orbits}
+
+Let $\Aut(G_0)$ be the automorphism group of the undecorated or
+partially specified molecular graph. For an assignment $\sigma$,
+let $\Aut(G_0;\sigma)$ denote the subgroup respecting its specified
+stereochemical descriptors. The orbit of atom $v$ is
+\begin{equation}
+\mathcal O_{\sigma}(v)
+=\{g(v):g\in\Aut(G_0;\sigma)\}.
+\label{eq:orbits}
+\end{equation}
+Specifying configurations can split parent atom orbits, or it can
+preserve an atom orbit while changing the molecular stereochemical
+symmetry. Orbit preservation alone does not establish achirality:
+the effect of spatial reflection on tetrahedral configurations must
+be analyzed separately.
+
+\todolist{Find a fully verified chemical pair of examples for orbit-preserving
+versus orbit-splitting stereochemical decoration. Confirm with explicit
+automorphism calculations and depict both molecular structures in Figure 1.}
+
+\subsection{Enumerating unique stereochemical graph classes}
+\label{subsec:enumeration}
+
+The reproducible baseline enumerates the Cartesian product in
+eq~\ref{eq:omega}, inserts each local configuration \emph{only into an
+existing descriptor slot}, and deduplicates completed graphs using exact
+stereo-aware graph isomorphism. With an appropriate action of the
+constitutional automorphism group $\Gamma$ on the local states,
+unique graph classes are the orbits $\Omega/\Gamma$. Burnside's lemma
+gives the independent count
+\begin{equation}
+N_{\mathrm{orbits}}=
+\frac{1}{|\Gamma|}
+\sum_{g\in\Gamma}|\operatorname{Fix}_{\Omega}(g)|.
+\label{eq:burnside}
+\end{equation}
+The action must transport both site locations and tetrahedral parity;
+it must not treat a local handedness label as invariant under arbitrary
+permutations of ligand slots.
+
+\subsection{Prospective symmetry-pruned enumeration}
+\label{subsec:prune}
+
+Canonical augmentation and stabilizer-orbit methods may suppress
+redundant \emph{partial} assignments, following the general principles of
+isomorph-free exhaustive generation.\cite{McKay1998} For a partial
+assignment $\sigma_j$ and candidate site $s_j$, one safe conditional
+strategy would use
+\begin{equation}
+H_j=\Stab_{\Gamma}(\sigma_j)\cap\Stab_{\Gamma}(s_j)
+\label{eq:stabilizer}
+\end{equation}
+and branch on representatives of $X_{s_j}/H_j$, provided the induced
+group action, state transport, and admissible domains are exact.
+\emph{This optimization is not part of the initial validated generator.}
+
+\section{Computational Methods and Reproducibility}
+\label{sec:methods}
+
+\subsection{Input contract and implemented workflows}
+
+The present algorithms accept \StereoMolGraph{} instances with
+pre-existing potential stereodescriptors. No geometry inference occurs
+inside site analysis or stereoisomer enumeration. In this first study,
+isotopically specified atoms and non-single bonds are excluded to avoid
+confounding stereogenicity with chemical labels not retained by the
+current input representation. For controlled comparisons, upstream
+preprocessing may restrict already existing sites to those nominated
+by RDKit, but missing sites are never silently inserted.
+
+\subsection{Exact activation and dependency calculation}
+
+For each completed context of the other sites, generate alternative
+local configurations at the target and perform anchored stereochemical
+isomorphism tests. Cache repeated contexts since $A_s$ does not depend
+on the currently assigned state at $s$. For each ordered pair
+$(t,s)$, search for a witness of eq~\ref{eq:dependency}. Record not
+only the edge, but also the assignments that switch activation.
+
+\subsection{Independent orbit verification and geometry probes}
+
+Construct the constitutional graph with explicit H atoms; enumerate
+its automorphisms independently (NetworkX in the pilot) and transport
+all local tetrahedral parities. Confirm eq~\ref{eq:burnside} and check
+every pair of enumerated representatives. Where RDKit disagrees, log
+stereotags before and after stereochemistry cleanup. Optional ETKDG
+embedding and MMFF minimization provide a separate \emph{heuristic}
+check of geometric realizability; successful optimization alone does
+not establish isolable stereoisomers.
+
+\subsection{Benchmark and performance plan}
+
+\todolist{Construct a curated, nonredundant tetrahedral-only benchmark
+covering acyclic molecules, meso compounds, repeated stereogenic arms,
+bridged and cage systems, and conditional stereocenters. Use full
+isomer-class comparisons, not only counts. Randomly relabel atoms and
+verify invariance of activation functions, dependency edges, and all
+output equivalence classes. Report runtime, graph-isomorphism calls,
+partial search nodes, and memory for the unpruned baseline and any
+future symmetry pruning.}
+
+\section{Results and Discussion: Working Outline}
+\label{sec:results}
+
+\subsection{A case study with five tetrahedral sites}
+
+The oxygen-rich bridged molecule VS294 from the CIP validation sample has
+five candidate tetrahedral sites (atom indices 1, 3, 5, 8, and 9).
+In the graph-theoretical model, sites 1, 5, 8, and 9 are active in every
+represented context, whereas site 3 is conditionally active. Exact
+contextual comparisons identify directed influences from each of the
+other four sites to site 3. The corresponding dependency network should
+be presented together with the molecular structure and a compact
+assignment/witness table (Figure~\ref{fig:dependency}).
+
+\begin{figure}[ht]
+  \centering
+  \fbox{\parbox{0.87\linewidth}{\centering\small
+  \vspace{0.6cm}
+  PLACEHOLDER: VS294 molecular drawing with atom indices and verified
+  directed dependencies toward central site C3.
+  \vspace{0.6cm}}}
+  \caption{Planned illustration of conditional tetrahedral stereogenicity
+  in VS294. Solid edges will represent exact, witness-supported changes
+  in the stereogenicity of the central site, rather than heuristic
+  positional influence.}
+  \label{fig:dependency}
+\end{figure}
+
+\subsection{Seven graph classes versus six RDKit outputs}
+
+The same five variable sites give 32 local tetrahedral assignments.
+An independent explicit-hydrogen graph automorphism calculation yields
+$|\Gamma|=8$ and seven disjoint assignment orbits with sizes
+$2,2,4,4,4,8,8$. The Burnside fixed-point sum is 56, hence seven
+classes. All seven \StereoMolGraph{} representatives occupy different
+independently calculated orbits and all 21 pairs are non-isomorphic
+under the current stereo-aware VF2 implementation.
+
+In the pilot, RDKit 2026.09.2 produces six outputs: its standard stereo
+cleanup removes the central C3 tetrahedral tag in all 32 tagged
+assignments and collapses two orbits. Both opposite C3 arrangements
+were embedded and optimized in 10 conformers each under a molecular
+mechanics model. This supports distinct locally realizable 3D
+arrangements but does not establish configurational stability.
+
+\begin{table}[ht]
+\centering
+\caption{Verified pilot results for VS294 under the stated
+ tetrahedral graph model; not a full benchmark.}
+\label{tab:vs294}
+\begin{tabular}{@{}lr@{}}
+\toprule
+Quantity & Result \\
+\midrule
+Candidate tetrahedral sites & 5 \\
+Formal assignments & 32 \\
+Constitutional automorphisms & 8 \\
+Independent stereo-graph orbits & 7 \\
+StereoMolGraph representatives & 7 \\
+Distinct RDKit-cleaned outputs & 6 \\
+Pairwise isomorphic pairs among seven & 0/21 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Accuracy and generalization benchmark}
+
+\todolist{Replace pilot table with a well-controlled benchmark and
+explicit characterization of which molecules are in scope. Preliminary
+isotope-free, single-bond comparisons matched RDKit counts in 137 of
+152 completed cases, with 15 mismatches concentrated in cyclic
+structures; this is a selected, RDKit-site-matched diagnostic sample,
+not a general accuracy estimate. Supply an independent equivalence
+oracle for each nontrivial discrepancy.}
+
+\subsection{Symmetry, meso compounds, and activation patterns}
+
+\todolist{Quantify always-active, conditionally active, and inactive
+sites by topology. Classify enantiomeric pairs and achiral
+stereo-graph classes. Test atom-orbit preservation/splitting under
+stereochemical decoration and distinguish it from molecular chirality.}
+
+\subsection{Computational scaling and symmetry pruning}
+
+\todolist{Benchmark the exhaustive reference implementation against
+incremental caching and certified automorphism pruning. Report results
+as a function of both the number of candidate sites and the number of
+inequivalent outputs. Do not claim acceleration until correctness is
+validated against exhaustive enumeration on the same inputs.}
+
+\section{Limitations and Scope}
+
+The current results concern tetrahedral configuration domains
+associated with \emph{given} molecular graph descriptors. Candidate
+nomination and chemically valid valence/hybridization perception are
+separate problems. Exact graph isomorphism establishes equivalence
+relative to the represented atom and bond attributes; missing
+constitutional labels can merge distinct chemical species. The
+existence of a geometrically embedded conformer does not prove
+configurational stability or experimental isolability. Isotopic,
+alkene, axial, and coordination stereochemistry remain outside the
+initial benchmark scope.
+
+\section{Conclusions: Intended Claims}
+
+A rigorous description of configuration-dependent stereogenicity
+allows molecular sites to be classified by how their distinguishable
+states change under assignments elsewhere in the molecule. Exact
+anchored isomorphism tests turn such effects into reproducible
+dependency witnesses, and the resulting configured graphs can be
+validated independently through automorphism orbits. The full
+manuscript must establish generality and computational effectiveness
+through a broader benchmark before drawing conclusions beyond the
+current case studies.
+
+\section{Data and Software Availability}
+
+Source code and example analyses are available in the GitHub projects
+\emph{StereoMolGraph} and \emph{Experiments-Stereoisomers}
+(owner: \texttt{maxim-papusha}).
+\todolist{Before submission: pin immutable release commits, deposit
+full benchmark tables and reproducibility scripts, supply software
+license and environment information, and archive a release DOI.}
+
+\section{Supporting Information}
+
+\todolist{Prepare a separate Supporting Information PDF or document
+containing: formal proofs and descriptor transport conventions;
+complete assignment/orbit tables; atom-numbered structures;
+all graph-automorphism witnesses; benchmark membership and exclusion
+criteria; exhaustive vs optimized enumeration verification;
+relabeling invariance checks; and conformer-generation details.}
+
+% Confirm authors and funding acknowledgments before submission.
+\bibliography{references}
+
+\end{document}
